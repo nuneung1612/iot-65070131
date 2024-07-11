@@ -57,6 +57,32 @@ async def create_book(book: dict, response: Response, db: Session = Depends(get_
 # async def delete_book(book_id: int, db: Session = Depends(get_db)):
 #     pass
 
+#---------student----------
+@router_v1.get('/student')
+async def get_stu(db: Session = Depends(get_db)):
+    return db.query(models.Student).all()
+
+@router_v1.get('/student/{stu_id}')
+async def get_stu(stu_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Student).filter(models.Student.id == stu_id).first()
+
+@router_v1.post('/student')
+async def create_stu(stu: dict, response: Response, db: Session = Depends(get_db)):
+    # TODO: Add validation
+    newstu = models.Student(stu_id=stu['stu_id'], fname=stu['fname'], lname=stu['lname'], dob=stu['dob'], gender=stu['gender'])
+    db.add(newstu)
+    db.commit()
+    db.refresh(newstu)
+    response.status_code = 201
+    return newstu
+
+
+#------Delete Eror-----------
+@router_v1.delete('/student/{stu_id}')
+async def get_stu(stu_id: int, db: Session = Depends(get_db)):
+    db.query(models.Student).filter(models.Student.id == stu_id).first()
+    db.delete()
+#------Delete Eror-----------
 app.include_router(router_v1)
 
 if __name__ == '__main__':
